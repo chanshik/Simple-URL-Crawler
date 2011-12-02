@@ -27,6 +27,7 @@ class SimpleUrlCrawler
     @depth_limit = depth_limit
     @max_page = max_page
     @page_count = 0
+	@visited = {}
     
     url_list.each do |url|
       @q << {:url => url, :depth => 1}
@@ -35,16 +36,17 @@ class SimpleUrlCrawler
     while !@q.empty? do
       next_target = @q.pop
       
-      continue if next_target[:depth] > @depth_limit
-      
       break if @page_count > @max_page
+	  next if @visited[next_target[:url]].nil? == false and @visited[next_target[:url]] == 1
+      next if next_target[:depth] > @depth_limit
       
       @file.puts("#{next_target[:url]}")
       @file.flush
-      
+
       @page_count += 1
       
       puts "Fetching URL @ #{next_target[:url]}"
+	  @visited[next_target[:url]] = 1
       
       if Random.rand(10) >= 5
         sleep(0.5)
